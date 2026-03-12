@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Prediction History</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#dbeafe,#eef2ff);
+padding:40px;
+text-align:center;
+}
+
+h2{
+color:#1e3a8a;
+margin-bottom:20px;
+}
+
+table{
+margin:auto;
+border-collapse:collapse;
+width:85%;
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 6px 15px rgba(0,0,0,0.1);
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #eee;
+text-align:center;
+}
+
+th{
+background:#1e3a8a;
+color:white;
+}
+
+tr:hover{
+background:#f1f5ff;
+}
+
+.high{
+color:#dc2626;
+font-weight:bold;
+}
+
+.low{
+color:#16a34a;
+font-weight:bold;
+}
+
+.btn{
+display:inline-block;
+margin-top:20px;
+padding:10px 20px;
+background:#1e3a8a;
+color:white;
+text-decoration:none;
+border-radius:6px;
+}
+
+.btn:hover{
+background:#2563eb;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Your Prediction History</h2>
+
+<table>
+
+<tr>
+<th>Glucose</th>
+<th>BMI</th>
+<th>Age</th>
+<th>Result</th>
+<th>Probability</th>
+<th>Date</th>
+</tr>
+
+{% for d in data %}
+
+<tr>
+
+<td>{{ d.input.Glucose }}</td>
+
+<td>{{ d.input.BMI }}</td>
+
+<td>{{ d.input.Age }}</td>
+
+<td>
+{% if d.prediction == 1 %}
+<span class="high">⚠️ High Risk</span>
+{% else %}
+<span class="low">✅ Low Risk</span>
+{% endif %}
+</td>
+
+<td>{{ (d.probability*100)|round(2) }}%</td>
+
+<td>{{ d.time.strftime("%d-%m-%Y %H:%M") }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<a href="/predict_page" class="btn">New Prediction</a>
+
+</body>
+</html>

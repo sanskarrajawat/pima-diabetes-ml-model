@@ -1,90 +1,113 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 <title>Diabetes Prediction</title>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-/* ===== BACKGROUND ===== */
 body{
-    font-family:Arial;
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background: linear-gradient(135deg,#dbeafe,#eef2ff,#e0f2fe);
+font-family:Arial;
+margin:0;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background: linear-gradient(135deg,#dbeafe,#eef2ff,#e0f2fe);
 }
 
-/* ===== BOX ===== */
 .box{
-    background:white;
-    width:420px;
-    padding:30px;
-    border-radius:16px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.15);
-    text-align:center;
+background:white;
+width:430px;
+padding:30px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.15);
+text-align:center;
 }
 
-/* ===== TITLE ===== */
 h2{
-    color:#1e3a8a;
-    margin-bottom:20px;
+color:#1e3a8a;
+margin-bottom:20px;
 }
 
-/* ===== LABEL ===== */
 label{
-    display:block;
-    text-align:left;
-    margin-top:10px;
-    font-size:14px;
-    color:#444;
+display:block;
+text-align:left;
+margin-top:10px;
+font-size:14px;
+color:#444;
 }
 
-/* ===== INPUT ===== */
-input{
-    width:95%;
-    padding:10px;
-    margin-top:4px;
-    border-radius:6px;
-    border:1px solid #ccc;
-    transition:0.2s;
+input,select{
+width:95%;
+padding:10px;
+margin-top:4px;
+border-radius:6px;
+border:1px solid #ccc;
 }
 
-input:focus{
-    border-color:#1e3a8a;
-    outline:none;
-    box-shadow:0 0 6px rgba(30,58,138,0.3);
-}
-
-/* ===== BUTTON ===== */
 button{
-    background: linear-gradient(90deg,#2563eb,#1e3a8a);
-    color:white;
-    padding:12px 25px;
-    border:none;
-    margin-top:18px;
-    border-radius:8px;
-    font-size:16px;
-    cursor:pointer;
+background: linear-gradient(90deg,#2563eb,#1e3a8a);
+color:white;
+padding:12px 25px;
+border:none;
+margin-top:18px;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
 }
 
 button:hover{
-    opacity:0.9;
+opacity:0.9;
 }
 
-/* ===== RESULT ===== */
-.error{color:#dc2626;font-weight:bold;}
-.success{color:#16a34a;font-weight:bold;}
+.error{
+color:#dc2626;
+font-weight:bold;
+}
+
+.success{
+color:#16a34a;
+font-weight:bold;
+}
+
+#explanation{
+margin-top:12px;
+font-size:14px;
+background:#f1f5ff;
+padding:10px;
+border-radius:8px;
+text-align:left;
+}
+
+#suggestions{
+margin-top:12px;
+font-size:14px;
+background:#ecfdf5;
+padding:10px;
+border-radius:8px;
+text-align:left;
+}
+
+.history-btn{
+display:inline-block;
+margin-top:15px;
+padding:10px 20px;
+background:#1e3a8a;
+color:white;
+text-decoration:none;
+border-radius:6px;
+font-weight:bold;
+}
 
 canvas{
-    margin-top:25px;
+margin-top:25px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -95,34 +118,41 @@ canvas{
 
 <form id="predictForm">
 
-<label>Pregnancies</label>
-<input type="number" min="0" max="20" name="Pregnancies" required>
+<label>Gender</label> <select name="Gender" id="Gender">
 
-<label>Glucose</label>
-<input type="number" min="50" max="300" name="Glucose" required>
+<option value="Female">Female</option>
+<option value="Male">Male</option>
+</select>
 
-<label>Blood Pressure</label>
-<input type="number" min="30" max="200" name="BloodPressure" required>
+<label>Pregnancies</label> <input type="number" min="0" max="20" name="Pregnancies" id="Pregnancies" required>
 
-<label>Skin Thickness</label>
-<input type="number" min="0" max="100" name="SkinThickness" required>
+<label>Glucose</label> <input type="number" min="50" max="300" name="Glucose" required>
 
-<label>Insulin</label>
-<input type="number" min="0" max="900" name="Insulin" required>
+<label>Blood Pressure</label> <input type="number" min="40" max="180" name="BloodPressure" required>
 
-<label>BMI</label>
-<input type="number" min="10" max="70" step="0.1" name="BMI" required>
+<label>Skin Thickness</label> <input type="number" min="0" max="100" name="SkinThickness" required>
 
-<label>DPF</label>
-<input type="number" min="0" max="3" step="0.01" name="DiabetesPedigreeFunction" required>
+<label>Insulin</label> <input type="number" min="0" max="900" name="Insulin" required>
 
-<label>Age</label>
-<input type="number" min="1" max="120" name="Age" required>
+<label>BMI</label> <input type="number" min="10" max="70" step="0.1" name="BMI" required>
+
+<label>DPF</label> <input type="number" min="0" max="3" step="0.01" name="DiabetesPedigreeFunction" required>
+
+<label>Age</label> <input type="number" min="18" max="100" name="Age" required>
 
 <button type="submit">Predict</button>
+
 </form>
 
 <h3 id="result"></h3>
+
+<div id="explanation"></div>
+
+<div id="suggestions"></div>
+
+<a href="/history" class="history-btn">
+View My Prediction History
+</a>
 
 <canvas id="chart" width="350" height="200"></canvas>
 
@@ -132,51 +162,164 @@ canvas{
 
 let myChart=null;
 
+/* Gender logic */
+
+document.getElementById("Gender").addEventListener("change",function(){
+
+if(this.value==="Male"){
+document.getElementById("Pregnancies").value=0;
+document.getElementById("Pregnancies").disabled=true;
+}else{
+document.getElementById("Pregnancies").disabled=false;
+}
+
+});
+
+/* Form submit */
+
 document.getElementById("predictForm").onsubmit = async function(e){
-    e.preventDefault();
 
-    let formData=new FormData(this);
-    let data=Object.fromEntries(formData.entries());
-    for(let k in data) data[k]=Number(data[k]);
+e.preventDefault();
 
-    let res=await fetch("/predict",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(data)
-    });
+let formData=new FormData(this);
+let data=Object.fromEntries(formData.entries());
 
-    let r=await res.json();
+for(let k in data){
+data[k]=Number(data[k]);
+}
 
-    if(r.error){
-        result.innerHTML="<span class='error'>❌ "+r.error+"</span>";
-        return;
-    }
+let error="";
 
-    if(r.prediction==1){
-        result.innerHTML="<span class='error'>⚠️ High Risk ("+r.probability+"%)</span>";
-    }else{
-        result.innerHTML="<span class='success'>✅ Low Risk ("+r.probability+"%)</span>";
-    }
+/* Validation */
 
-    showChart(data);
+if(data.Age<18 || data.Age>100)
+error="Age must be between 18 and 100";
+
+else if(data.Gender==="Male" && data.Pregnancies>0)
+error="Male cannot have pregnancies";
+
+else if(data.Pregnancies > Math.floor((data.Age-15)/2))
+error="Pregnancies unrealistic for this age";
+
+else if(data.Glucose<50 || data.Glucose>300)
+error="Glucose must be between 50 and 300";
+
+else if(data.BloodPressure<40 || data.BloodPressure>180)
+error="Blood Pressure must be between 40 and 180";
+
+else if(data.BMI<10 || data.BMI>70)
+error="BMI must be between 10 and 70";
+
+else if(data.DiabetesPedigreeFunction<0 || data.DiabetesPedigreeFunction>3)
+error="DPF must be between 0 and 3";
+
+if(error!==""){
+document.getElementById("result").innerHTML="<span class='error'>❌ "+error+"</span>";
+return;
+}
+
+/* API Call */
+
+let res=await fetch("/predict",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+});
+
+let r=await res.json();
+
+if(r.error){
+document.getElementById("result").innerHTML="<span class='error'>❌ "+r.error+"</span>";
+return;
+}
+
+/* Prediction Result */
+
+if(r.prediction==1){
+document.getElementById("result").innerHTML="<span class='error'>⚠️ High Risk ("+r.probability+"%)</span>";
+}else{
+document.getElementById("result").innerHTML="<span class='success'>✅ Low Risk ("+r.probability+"%)</span>";
+}
+
+/* AI Explanation */
+
+if(r.top_factors){
+
+document.getElementById("explanation").innerHTML=
+
+"<b>AI Explanation</b><br>"+
+"Top factors influencing prediction:<br>"+
+"• "+r.top_factors.join("<br>• ");
+
+}
+
+/* Health Suggestions */
+
+let suggestions="<b>Health Suggestions</b><br>";
+
+if(data.Glucose>140)
+suggestions+="• Reduce sugar intake<br>";
+
+if(data.BMI>30)
+suggestions+="• Maintain BMI under 25<br>";
+
+if(data.BloodPressure>130)
+suggestions+="• Reduce salt intake<br>";
+
+if(data.Age>45)
+suggestions+="• Regular diabetes screening<br>";
+
+if(data.Glucose<120 && data.BMI<25)
+suggestions+="• Maintain healthy lifestyle<br>";
+
+suggestions+="• Regular exercise<br>";
+suggestions+="• Periodic health checkups";
+
+document.getElementById("suggestions").innerHTML=suggestions;
+
+/* Chart */
+
+showChart(data);
+
 };
+
+/* Chart Function */
 
 function showChart(data){
 
-    const normal={Glucose:100,BMI:25,Age:30};
+const normal={Glucose:100,BMI:25,Age:30};
 
-    if(myChart) myChart.destroy();
+if(myChart) myChart.destroy();
 
-    myChart=new Chart(document.getElementById("chart"),{
-        type:'bar',
-        data:{
-            labels:['Glucose','BMI','Age'],
-            datasets:[
-                {label:'Your Value',data:[data.Glucose,data.BMI,data.Age]},
-                {label:'Normal',data:[normal.Glucose,normal.BMI,normal.Age]}
-            ]
-        }
-    });
+myChart=new Chart(document.getElementById("chart"),{
+
+type:'bar',
+
+data:{
+labels:['Glucose','BMI','Age'],
+datasets:[
+{
+label:'Your Value',
+data:[data.Glucose,data.BMI,data.Age],
+backgroundColor:"#60a5fa"
+},
+{
+label:'Normal',
+data:[normal.Glucose,normal.BMI,normal.Age],
+backgroundColor:"#fca5a5"
+}
+]
+},
+
+options:{
+responsive:true,
+plugins:{
+legend:{position:'top'}
+}
+}
+
+});
+
 }
 
 </script>

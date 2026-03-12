@@ -38,6 +38,16 @@ h2{
     box-shadow:0 8px 20px rgba(0,0,0,0.1);
 }
 
+.card h3{
+    margin:0;
+    color:#555;
+}
+
+.card h2{
+    margin-top:10px;
+    color:#1e3a8a;
+}
+
 /* TABLE */
 table{
     margin:auto;
@@ -64,6 +74,7 @@ tr:hover{
     background:#f1f5ff;
 }
 
+/* LOGOUT */
 .logout{
     text-align:center;
     margin-top:25px;
@@ -77,8 +88,9 @@ tr:hover{
     text-decoration:none;
 }
 
+/* CHART */
 .chart{
-    width:350px;
+    width:400px;
     margin:40px auto;
     background:white;
     padding:20px;
@@ -91,11 +103,13 @@ tr:hover{
 
 <body>
 
-<h2>Admin Dashboard</h2>
+<h2>Diabetes Prediction Admin Dashboard</h2>
 
+<!-- KPI CARDS -->
 <div class="cards">
+
     <div class="card">
-        <h3>Total</h3>
+        <h3>Total Predictions</h3>
         <h2>{{ total }}</h2>
     </div>
 
@@ -108,59 +122,99 @@ tr:hover{
         <h3>Low Risk</h3>
         <h2>{{ low }}</h2>
     </div>
+
 </div>
+
 
 <!-- PIE CHART -->
 <div class="chart">
-    <canvas id="riskChart"></canvas>
+<canvas id="riskChart"></canvas>
 </div>
 
+
+<!-- TABLE -->
 <table>
+
 <tr>
 <th>Glucose</th>
 <th>BMI</th>
 <th>Age</th>
-<th>Result</th>
+<th>Prediction</th>
 <th>Probability</th>
 <th>Date</th>
 </tr>
 
 {% for d in data %}
+
 <tr>
-<td>{{ d.input.Glucose }}</td>
-<td>{{ d.input.BMI }}</td>
-<td>{{ d.input.Age }}</td>
+
+<td>{{ d.input.Glucose if d.input.Glucose else "-" }}</td>
+
+<td>{{ d.input.BMI if d.input.BMI else "-" }}</td>
+
+<td>{{ d.input.Age if d.input.Age else "-" }}</td>
+
 <td>
+
 {% if d.prediction == 1 %}
-⚠️ High
+⚠️ High Risk
 {% else %}
-✅ Low
+✅ Low Risk
 {% endif %}
+
 </td>
+
 <td>{{ (d.probability*100)|round(2) }}%</td>
-<td>{{ d.time }}</td>
+
+<td>{{ d.time.strftime("%d-%m-%Y %H:%M") }}</td>
+
 </tr>
+
 {% endfor %}
+
 </table>
 
+
+<!-- LOGOUT -->
 <div class="logout">
 <a href="/logout">Logout</a>
 </div>
 
+
+
 <!-- CHART SCRIPT -->
 <script>
+
 const high = {{ high }};
 const low = {{ low }};
 
 new Chart(document.getElementById("riskChart"), {
+
     type: 'pie',
+
     data: {
+
         labels: ['High Risk','Low Risk'],
+
         datasets: [{
-            data: [high, low]
+            data: [high, low],
+            backgroundColor: [
+                '#ef4444',
+                '#22c55e'
+            ]
         }]
+    },
+
+    options:{
+        plugins:{
+            legend:{
+                position:'bottom'
+            }
+        }
     }
+
 });
+
 </script>
 
 </body>
