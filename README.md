@@ -1,220 +1,144 @@
-# 🩺 Pima Diabetes Prediction System
+# PIMA Diabetes Prediction System
 
-A full-stack **Machine Learning Web Application** that predicts the likelihood of diabetes using the **Pima Indians Diabetes Dataset**.
-The application integrates **Flask, Machine Learning, Explainable AI (SHAP), and MongoDB** to provide predictions along with feature explanations.
+PIMA Diabetes Prediction System is a Flask-based machine learning web application for diabetes risk screening using the PIMA dataset feature set. The app supports user authentication, role-based access, prediction history, and admin analytics.
 
----
+## Overview
 
-## 🚀 Project Overview
+The application predicts diabetes risk from the following medical inputs:
 
-This project predicts whether a patient is likely to have diabetes based on medical attributes such as:
+- Pregnancies
+- Glucose
+- Blood Pressure
+- Skin Thickness
+- Insulin
+- BMI
+- Diabetes Pedigree Function
+- Age
 
-* Pregnancies
-* Glucose Level
-* Blood Pressure
-* Skin Thickness
-* Insulin
-* BMI
-* Diabetes Pedigree Function
-* Age
+Each prediction returns:
 
-The system not only predicts diabetes risk but also explains the **most influential features** affecting the prediction.
+- Risk class (Low Risk / High Risk)
+- Probability score
+- Top model factors from SHAP explainability
 
----
+## Current Features
 
-## 🧠 Key Features
+- User registration and login
+- Admin login with dedicated dashboard
+- Prediction form with validation logic
+- SHAP-based top factor explanation
+- User-specific prediction history
+- MongoDB persistence for users and predictions
+- Professional dark UI across all pages
 
-✔ Machine Learning Diabetes Prediction
-✔ Explainable AI using SHAP
-✔ User Authentication System (Register & Login)
-✔ Admin Dashboard
-✔ Prediction History Storage
-✔ MongoDB Database Integration
-✔ REST API Prediction Endpoint
+## Tech Stack
 
----
+- Backend: Python, Flask, PyMongo
+- ML: scikit-learn, XGBoost, SHAP, joblib
+- Database: MongoDB
+- Frontend: HTML, CSS, JavaScript, Chart.js
 
-## 🛠 Tech Stack
+## Project Structure
 
-**Backend**
-
-* Python
-* Flask
-
-**Machine Learning**
-
-* Scikit-Learn
-* XGBoost
-* SHAP (Explainable AI)
-
-**Database**
-
-* MongoDB
-
-**Frontend**
-
-* HTML
-* CSS
-* JavaScript
-
----
-
-## 📂 Project Structure
-
-```
-pima-diabetes-ml-model
-│
-├── app.py
-├── diabetes_model.pkl
-├── requirements.txt
-│
-├── templates
-│   ├── home.html
-│   ├── login.html
-│   ├── register.html
-│   ├── dashboard.html
-│   ├── predict.html
-│   └── history.html
-│
-├── static
-│
-└── README.md
+```text
+pima_project/
+|- app.py
+|- diabetes.csv
+|- diabetes_model.pkl
+|- train_model.py
+|- requirements.txt
+|- static/
+|  |- styles.css
+|  |- pro-ui.css
+|- templates/
+|  |- home.html
+|  |- login.html
+|  |- register.html
+|  |- predict.html
+|  |- dashboard.html
+|  |- index.html
+|  |- templates/
+|     |- history.html
 ```
 
----
+## Local Setup
 
-## ⚙️ Installation & Setup
+1. Clone repository
 
-### 1️⃣ Clone Repository
-
-```
+```bash
 git clone https://github.com/sanskarrajawat/pima-diabetes-ml-model.git
-```
-
-### 2️⃣ Navigate to Project
-
-```
 cd pima-diabetes-ml-model
 ```
 
-### 3️⃣ Create Virtual Environment
+2. Create and activate virtual environment
 
-```
+```bash
 python -m venv venv
-```
-
-Activate:
-
-Mac/Linux
-
-```
 source venv/bin/activate
 ```
 
-Windows
+For Windows:
 
-```
+```bash
 venv\Scripts\activate
 ```
 
-### 4️⃣ Install Dependencies
+3. Install dependencies
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
-### 5️⃣ Run Application
+4. Configure environment variables
 
+Create `.env` in project root:
+
+```env
+MONGO_URI=mongodb://localhost:27017/
 ```
+
+5. Run application
+
+```bash
 python app.py
 ```
 
-App will run at:
+App URL:
 
-```
+```text
 http://127.0.0.1:5000
 ```
 
----
+## Data Persistence
 
-## 📊 Model Information
+Predictions are saved in MongoDB database `diabetes_db` under collection `predictions`.
 
-The model was trained using the **Pima Indians Diabetes Dataset** and predicts diabetes risk using medical indicators.
+Each saved document includes:
 
-Model Pipeline Includes:
+- User identity fields (`user`, `email`)
+- Full normalized input payload
+- Top-level medical fields for easy inspection in MongoDB Compass
+- Prediction class and probability
+- Timestamp
 
-* Data Preprocessing
-* Feature Scaling
-* XGBoost Classifier
-* Probability Prediction
+## Routes
 
-Explainability is implemented using **SHAP** to highlight the most influential factors in each prediction.
+- `/` Public home page
+- `/register` User registration
+- `/login` User/Admin login
+- `/dashboard` Admin dashboard (role restricted)
+- `/predict_page` User prediction form
+- `/predict` Prediction API endpoint
+- `/history` Logged-in user history
+- `/logout` Session logout
 
----
+## Notes
 
-## 📈 Prediction Output
+- This project currently uses MongoDB-only persistence for prediction records.
+- Keep `diabetes_model.pkl` in the root directory for successful model loading.
 
-The system returns:
+## Author
 
-* Diabetes Prediction (0 / 1)
-* Probability Score
-* Top Influential Features
+Sanskar Rajawat
 
-Example:
-
-```
-Prediction: High Diabetes Risk
-Probability: 78.45%
-Top Factors:
-- Glucose
-- BMI
-- Age
-```
-
----
-
-## 🔐 Authentication System
-
-The application includes:
-
-**User Features**
-
-* Register Account
-* Login
-* Make Predictions
-* View Prediction History
-
-**Admin Features**
-
-* Dashboard Analytics
-* Recent Predictions
-* Risk Statistics
-
----
-
-## 📌 Future Improvements
-
-* Docker Deployment
-* Cloud Deployment (AWS / Render)
-* Data Visualization Dashboard
-* Model Performance Monitoring
-* API Documentation
-
----
-
-## 👥 Team
-
-This project was developed as part of a **team-based academic project**.
-
-* Vaibhav Pratap Singh Rajawat
-  BTech Data Science
-  SRM Institute of Science and Technology
-
-GitHub:
-https://github.com/sanskarrajawat
-
----
-
-## ⭐ Support
-
-If you found this project useful, please consider giving it a ⭐ on GitHub.
+GitHub: https://github.com/sanskarrajawat
