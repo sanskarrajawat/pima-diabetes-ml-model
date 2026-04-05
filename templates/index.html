@@ -2,33 +2,133 @@
 <html>
 <head>
     <title>Diabetes Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pro-ui.css') }}">
     <style>
-        body{font-family:Arial; margin:40px;}
-        input{padding:6px; margin:4px;}
-        button{padding:8px 16px; margin-top:10px;}
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .legacy-shell {
+            width: min(780px, 100%);
+            border-radius: 22px;
+            padding: 28px;
+            background: rgba(14, 30, 43, 0.72);
+            border: 1px solid rgba(143, 188, 213, 0.24);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 34px;
+            letter-spacing: -0.7px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #b8d1e2;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            margin: 0;
+            border-radius: 10px;
+        }
+
+        .actions {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        button {
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin: 16px 0 0;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        @media (max-width: 720px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
 <body>
 
+<div class="legacy-shell">
+
 <h2>Diabetes Prediction Form</h2>
 
 <form id="predictForm">
 
-Pregnancies: <input type="number" name="Pregnancies" min="0" max="20" required><br><br>
-Glucose: <input type="number" name="Glucose" min="50" max="300" required><br><br>
-BloodPressure: <input type="number" name="BloodPressure" min="30" max="200" required><br><br>
-SkinThickness: <input type="number" name="SkinThickness" min="0" max="100" required><br><br>
-Insulin: <input type="number" name="Insulin" min="0" max="900" required><br><br>
-BMI: <input type="number" name="BMI" min="10" max="70" step="0.1" required><br><br>
-DiabetesPedigreeFunction: <input type="number" step="0.01" min="0" max="3" name="DiabetesPedigreeFunction" required><br><br>
-Age: <input type="number" name="Age" min="1" max="120" required><br><br>
+<div class="grid">
+<div>
+<label>Pregnancies</label>
+<input type="number" name="Pregnancies" min="0" max="20" required>
+</div>
+<div>
+<label>Glucose</label>
+<input type="number" name="Glucose" min="50" max="300" required>
+</div>
+<div>
+<label>Blood Pressure</label>
+<input type="number" name="BloodPressure" min="30" max="200" required>
+</div>
+<div>
+<label>Skin Thickness</label>
+<input type="number" name="SkinThickness" min="0" max="100" required>
+</div>
+<div>
+<label>Insulin</label>
+<input type="number" name="Insulin" min="0" max="900" required>
+</div>
+<div>
+<label>BMI</label>
+<input type="number" name="BMI" min="10" max="70" step="0.1" required>
+</div>
+<div>
+<label>Diabetes Pedigree Function</label>
+<input type="number" step="0.01" min="0" max="3" name="DiabetesPedigreeFunction" required>
+</div>
+<div>
+<label>Age</label>
+<input type="number" name="Age" min="1" max="120" required>
+</div>
+</div>
 
-<button type="submit">Predict</button>
+<div class="actions">
+<button class="btn" type="submit">Predict</button>
+</div>
 
 </form>
 
 <h3 id="result"></h3>
+
+</div>
 
 <script>
 document.getElementById("predictForm").onsubmit = async function(e){

@@ -4,43 +4,25 @@
 <head>
 <title>Prediction History</title>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='pro-ui.css') }}">
+
 <style>
 
 body{
-font-family:Arial;
-background:linear-gradient(135deg,#dbeafe,#eef2ff);
 padding:40px;
 text-align:center;
+font-family:'Segoe UI',sans-serif;
+background:
+radial-gradient(circle at 15% 10%, rgba(108, 92, 231, 0.22), transparent 24%),
+radial-gradient(circle at 85% 20%, rgba(72, 183, 255, 0.16), transparent 22%),
+linear-gradient(180deg, #070711 0%, #0c0d18 48%, #10111f 100%);
 }
 
 h2{
-color:#1e3a8a;
+color:#fff;
 margin-bottom:20px;
-}
-
-table{
-margin:auto;
-border-collapse:collapse;
-width:85%;
-background:white;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 6px 15px rgba(0,0,0,0.1);
-}
-
-th,td{
-padding:12px;
-border-bottom:1px solid #eee;
-text-align:center;
-}
-
-th{
-background:#1e3a8a;
-color:white;
-}
-
-tr:hover{
-background:#f1f5ff;
+font-size:38px;
 }
 
 .high{
@@ -56,15 +38,22 @@ font-weight:bold;
 .btn{
 display:inline-block;
 margin-top:20px;
-padding:10px 20px;
-background:#1e3a8a;
-color:white;
-text-decoration:none;
-border-radius:6px;
 }
 
-.btn:hover{
-background:#2563eb;
+.table-wrap{
+max-width:1000px;
+margin:auto;
+background:rgba(255,255,255,0.03);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:18px;
+padding:16px;
+box-shadow:0 16px 40px rgba(0,0,0,0.25);
+}
+
+
+.bottom-actions .btn{
+margin-top:10px;
+padding:8px 14px;
 }
 
 </style>
@@ -75,11 +64,23 @@ background:#2563eb;
 
 <h2>Your Prediction History</h2>
 
+<div class="table-wrap">
+{% if data|length == 0 %}
+<div class="card" style="max-width:700px;margin:20px auto;">
+No prediction history found for your account yet.
+</div>
+{% else %}
 <table>
 
 <tr>
+<th>Gender</th>
+<th>Pregnancies</th>
 <th>Glucose</th>
+<th>Blood Pressure</th>
+<th>Skin Thickness</th>
+<th>Insulin</th>
 <th>BMI</th>
+<th>DPF</th>
 <th>Age</th>
 <th>Result</th>
 <th>Probability</th>
@@ -90,9 +91,21 @@ background:#2563eb;
 
 <tr>
 
+<td>{{ d.input.Gender if d.input.Gender else "-" }}</td>
+
+<td>{{ d.input.Pregnancies if d.input.Pregnancies is not none else "-" }}</td>
+
 <td>{{ d.input.Glucose }}</td>
 
+<td>{{ d.input.BloodPressure if d.input.BloodPressure else "-" }}</td>
+
+<td>{{ d.input.SkinThickness if d.input.SkinThickness is not none else "-" }}</td>
+
+<td>{{ d.input.Insulin if d.input.Insulin is not none else "-" }}</td>
+
 <td>{{ d.input.BMI }}</td>
+
+<td>{{ d.input.DiabetesPedigreeFunction if d.input.DiabetesPedigreeFunction is not none else "-" }}</td>
 
 <td>{{ d.input.Age }}</td>
 
@@ -106,15 +119,21 @@ background:#2563eb;
 
 <td>{{ (d.probability*100)|round(2) }}%</td>
 
-<td>{{ d.time.strftime("%d-%m-%Y %H:%M") }}</td>
+<td>{{ d.time_display if d.time_display else d.time.strftime("%d-%m-%Y %H:%M:%S") }}</td>
 
 </tr>
 
 {% endfor %}
 
 </table>
+{% endif %}
+</div>
 
 <a href="/predict_page" class="btn">New Prediction</a>
+
+<div class="bottom-actions">
+<button type="button" class="btn" onclick="window.history.back()">Back</button>
+</div>
 
 </body>
 </html>

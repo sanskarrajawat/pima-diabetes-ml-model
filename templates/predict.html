@@ -6,30 +6,40 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='pro-ui.css') }}">
+
 <style>
 
 body{
-font-family:Arial;
 margin:0;
 min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-background: linear-gradient(135deg,#dbeafe,#eef2ff,#e0f2fe);
+font-family:'Segoe UI',sans-serif;
+background:
+radial-gradient(circle at 15% 10%, rgba(108, 92, 231, 0.22), transparent 24%),
+radial-gradient(circle at 85% 20%, rgba(72, 183, 255, 0.16), transparent 22%),
+linear-gradient(180deg, #070711 0%, #0c0d18 48%, #10111f 100%);
 }
 
 .box{
-background:white;
-width:430px;
-padding:30px;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
+width:500px;
+max-width:92vw;
+padding:32px;
 text-align:center;
+border-radius:24px;
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:0 28px 70px rgba(0,0,0,0.42);
 }
 
 h2{
-color:#1e3a8a;
-margin-bottom:20px;
+color:#fff;
+margin-bottom:22px;
+font-size:44px;
+line-height:1.05;
 }
 
 label{
@@ -37,30 +47,34 @@ display:block;
 text-align:left;
 margin-top:10px;
 font-size:14px;
-color:#444;
+color:#d1d5db;
+}
+
+.hint{
+font-size:12px;
+text-align:left;
+margin-top:2px;
+color:#cbd5e1;
 }
 
 input,select{
-width:95%;
-padding:10px;
+width:100%;
 margin-top:4px;
-border-radius:6px;
-border:1px solid #ccc;
+padding:13px 14px;
+border-radius:10px;
+border:1px solid rgba(255,255,255,0.08);
+background:rgba(15,18,34,0.78);
+color:#f7f8fc;
+}
+
+input::placeholder{
+color:#9ca3af;
 }
 
 button{
-background: linear-gradient(90deg,#2563eb,#1e3a8a);
-color:white;
-padding:12px 25px;
-border:none;
 margin-top:18px;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-opacity:0.9;
+font-size:20px;
+padding:12px 18px;
 }
 
 .error{
@@ -76,7 +90,7 @@ font-weight:bold;
 #explanation{
 margin-top:12px;
 font-size:14px;
-background:#f1f5ff;
+background:rgba(17, 22, 42, 0.85);
 padding:10px;
 border-radius:8px;
 text-align:left;
@@ -85,7 +99,7 @@ text-align:left;
 #suggestions{
 margin-top:12px;
 font-size:14px;
-background:#ecfdf5;
+background:rgba(17, 22, 42, 0.85);
 padding:10px;
 border-radius:8px;
 text-align:left;
@@ -94,16 +108,19 @@ text-align:left;
 .history-btn{
 display:inline-block;
 margin-top:15px;
-padding:10px 20px;
-background:#1e3a8a;
-color:white;
-text-decoration:none;
-border-radius:6px;
 font-weight:bold;
 }
 
 canvas{
 margin-top:25px;
+background:rgba(17, 22, 42, 0.55);
+border-radius:12px;
+padding:10px;
+}
+
+.back-btn{
+font-size:14px;
+padding:8px 14px;
 }
 
 </style>
@@ -112,7 +129,7 @@ margin-top:25px;
 
 <body>
 
-<div class="box">
+<div class="box card">
 
 <h2>Diabetes Risk Prediction</h2>
 
@@ -124,23 +141,41 @@ margin-top:25px;
 <option value="Male">Male</option>
 </select>
 
-<label>Pregnancies</label> <input type="number" min="0" max="20" name="Pregnancies" id="Pregnancies" required>
+<div class="hint">Select either Female or Male.</div>
 
-<label>Glucose</label> <input type="number" min="50" max="300" name="Glucose" required>
+<label>Pregnancies</label> <input type="number" min="0" max="20" name="Pregnancies" id="Pregnancies" value="0" placeholder="Range: 0 to 20" required>
 
-<label>Blood Pressure</label> <input type="number" min="40" max="180" name="BloodPressure" required>
+<div class="hint">Automatically set to 0 for male users.</div>
 
-<label>Skin Thickness</label> <input type="number" min="0" max="100" name="SkinThickness" required>
+<label>Glucose</label> <input type="number" min="50" max="300" name="Glucose" placeholder="mg/dL (Range: 50 to 300)" required>
 
-<label>Insulin</label> <input type="number" min="0" max="900" name="Insulin" required>
+<div class="hint">Example: 110, 145. Allowed range: 50 to 300.</div>
 
-<label>BMI</label> <input type="number" min="10" max="70" step="0.1" name="BMI" required>
+<label>Blood Pressure</label> <input type="number" min="40" max="180" name="BloodPressure" placeholder="mmHg (Range: 40 to 180)" required>
 
-<label>DPF</label> <input type="number" min="0" max="3" step="0.01" name="DiabetesPedigreeFunction" required>
+<div class="hint">Example: 80, 120. Allowed range: 40 to 180.</div>
 
-<label>Age</label> <input type="number" min="18" max="100" name="Age" required>
+<label>Skin Thickness</label> <input type="number" min="0" max="100" name="SkinThickness" placeholder="mm (Range: 0 to 100)" required>
 
-<button type="submit">Predict</button>
+<div class="hint">Allowed range: 0 to 100.</div>
+
+<label>Insulin</label> <input type="number" min="0" max="900" name="Insulin" placeholder="mu U/ml (Range: 0 to 900)" required>
+
+<div class="hint">Allowed range: 0 to 900.</div>
+
+<label>BMI</label> <input type="number" min="10" max="70" step="0.1" name="BMI" placeholder="Range: 10.0 to 70.0" required>
+
+<div class="hint">Example: 24.5, 31.2. Allowed range: 10 to 70.</div>
+
+<label>DPF</label> <input type="number" min="0" max="3" step="0.01" name="DiabetesPedigreeFunction" placeholder="Range: 0.00 to 3.00" required>
+
+<div class="hint">Family history factor. Allowed range: 0 to 3.</div>
+
+<label>Age</label> <input type="number" min="1" max="100" name="Age" placeholder="Years (Range: 1 to 100)" required>
+
+<div class="hint">Allowed range: 1 to 100 (for male users or zero pregnancies, age can be below 18).</div>
+
+<button type="submit" class="btn">Predict</button>
 
 </form>
 
@@ -150,9 +185,13 @@ margin-top:25px;
 
 <div id="suggestions"></div>
 
-<a href="/history" class="history-btn">
+<a href="/history" class="history-btn btn">
 View My Prediction History
 </a>
+
+<div>
+<button type="button" class="btn back-btn" onclick="window.history.back()">Back</button>
+</div>
 
 <canvas id="chart" width="350" height="200"></canvas>
 
@@ -168,9 +207,9 @@ document.getElementById("Gender").addEventListener("change",function(){
 
 if(this.value==="Male"){
 document.getElementById("Pregnancies").value=0;
-document.getElementById("Pregnancies").disabled=true;
+document.getElementById("Pregnancies").readOnly=true;
 }else{
-document.getElementById("Pregnancies").disabled=false;
+document.getElementById("Pregnancies").readOnly=false;
 }
 
 });
@@ -184,21 +223,38 @@ e.preventDefault();
 let formData=new FormData(this);
 let data=Object.fromEntries(formData.entries());
 
-for(let k in data){
-data[k]=Number(data[k]);
+if(!Object.prototype.hasOwnProperty.call(data, "Pregnancies")){
+data.Pregnancies = 0;
+}
+
+const numericFields=[
+"Pregnancies",
+"Glucose",
+"BloodPressure",
+"SkinThickness",
+"Insulin",
+"BMI",
+"DiabetesPedigreeFunction",
+"Age"
+];
+
+for(const key of numericFields){
+data[key]=Number(data[key]);
 }
 
 let error="";
 
 /* Validation */
 
-if(data.Age<18 || data.Age>100)
-error="Age must be between 18 and 100";
+const minAge = (data.Gender === "Male" || data.Pregnancies === 0) ? 1 : 18;
+
+if(data.Age<minAge || data.Age>100)
+error="Age must be between "+minAge+" and 100";
 
 else if(data.Gender==="Male" && data.Pregnancies>0)
 error="Male cannot have pregnancies";
 
-else if(data.Pregnancies > Math.floor((data.Age-15)/2))
+else if(data.Gender==="Female" && data.Pregnancies>0 && data.Pregnancies > Math.floor((data.Age-15)/2))
 error="Pregnancies unrealistic for this age";
 
 else if(data.Glucose<50 || data.Glucose>300)
@@ -243,39 +299,88 @@ document.getElementById("result").innerHTML="<span class='success'>✅ Low Risk 
 
 /* AI Explanation */
 
-if(r.top_factors){
+const explanationLines=[];
+
+if(r.top_factors && r.top_factors.length){
+explanationLines.push("Top factors influencing this result:");
+for(const factor of r.top_factors){
+explanationLines.push("• "+factor);
+}
+}
+
+if(data.Glucose > 140){
+explanationLines.push("• Glucose is elevated, which increases diabetes risk.");
+}else if(data.Glucose < 100){
+explanationLines.push("• Glucose is in a safer range.");
+}
+
+if(data.BMI > 30){
+explanationLines.push("• BMI is above the healthy range and adds risk.");
+}else if(data.BMI < 25){
+explanationLines.push("• BMI is in a healthier range.");
+}
+
+if(data.BloodPressure > 130){
+explanationLines.push("• Blood pressure is elevated and may affect the outcome.");
+}
+
+if(data.DiabetesPedigreeFunction >= 1){
+explanationLines.push("• Family history factor is significant in this case.");
+}
+
+if(data.Age > 45){
+explanationLines.push("• Age is a contributing factor for risk screening.");
+}
+
+if(!explanationLines.length){
+explanationLines.push("The entered values are close to the model's normal range.");
+}
 
 document.getElementById("explanation").innerHTML=
-
 "<b>AI Explanation</b><br>"+
-"Top factors influencing prediction:<br>"+
-"• "+r.top_factors.join("<br>• ");
-
-}
+explanationLines.join("<br>");
 
 /* Health Suggestions */
 
-let suggestions="<b>Health Suggestions</b><br>";
+const suggestions=[];
+
+if(r.prediction==1){
+suggestions.push("Your result is high risk, so timely medical follow-up is recommended.");
+}else{
+suggestions.push("Your result is low risk, but healthy habits should continue.");
+}
 
 if(data.Glucose>140)
-suggestions+="• Reduce sugar intake<br>";
+suggestions.push("Reduce sugar intake and monitor glucose regularly.");
 
 if(data.BMI>30)
-suggestions+="• Maintain BMI under 25<br>";
+suggestions.push("Focus on weight management to bring BMI closer to a healthy range.");
 
 if(data.BloodPressure>130)
-suggestions+="• Reduce salt intake<br>";
+suggestions.push("Reduce salt intake and monitor blood pressure.");
 
 if(data.Age>45)
-suggestions+="• Regular diabetes screening<br>";
+suggestions.push("Schedule regular diabetes screening because age adds risk.");
+
+if(data.DiabetesPedigreeFunction>=1)
+suggestions.push("Because family history is higher, keep regular checkups.");
+
+if(data.Insulin>200)
+suggestions.push("Insulin is high; discuss it with a healthcare professional.");
+
+if(data.SkinThickness>35)
+suggestions.push("Skin thickness is on the higher side, so lifestyle attention is useful.");
 
 if(data.Glucose<120 && data.BMI<25)
-suggestions+="• Maintain healthy lifestyle<br>";
+suggestions.push("Maintain your current healthy lifestyle.");
 
-suggestions+="• Regular exercise<br>";
-suggestions+="• Periodic health checkups";
 
-document.getElementById("suggestions").innerHTML=suggestions;
+suggestions.push("Stay physically active with regular exercise.");
+suggestions.push("Continue periodic health checkups and tracking.");
+
+document.getElementById("suggestions").innerHTML=
+"<b>Health Suggestions</b><br>"+
+suggestions.map(item => "• "+item).join("<br>");
 
 /* Chart */
 

@@ -6,19 +6,35 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='pro-ui.css') }}">
+
 <style>
 
 body{
-    font-family:Arial;
     margin:0;
     padding:20px;
-    background: linear-gradient(135deg,#dbeafe,#eef2ff);
+    font-family:'Segoe UI',sans-serif;
+    background:
+    radial-gradient(circle at 15% 10%, rgba(108, 92, 231, 0.22), transparent 24%),
+    radial-gradient(circle at 85% 20%, rgba(72, 183, 255, 0.16), transparent 22%),
+    linear-gradient(180deg, #070711 0%, #0c0d18 48%, #10111f 100%);
+}
+
+.bottom-actions{
+    text-align:center;
+    margin-top:12px;
+}
+
+.bottom-actions .btn{
+    padding:8px 14px;
 }
 
 h2{
     text-align:center;
-    color:#1e3a8a;
+    color:#fff;
     margin-bottom:25px;
+    font-size:38px;
 }
 
 /* CARDS */
@@ -29,49 +45,29 @@ h2{
     margin-bottom:30px;
 }
 
+th:last-child,
+td:last-child {
+    white-space: nowrap;
+}
+
 .card{
-    background:white;
     padding:20px;
     width:200px;
     text-align:center;
-    border-radius:14px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.1);
+    border-radius:18px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:0 16px 40px rgba(0,0,0,0.25);
 }
 
 .card h3{
     margin:0;
-    color:#555;
+    color:#d1d5db;
 }
 
 .card h2{
     margin-top:10px;
-    color:#1e3a8a;
-}
-
-/* TABLE */
-table{
-    margin:auto;
-    border-collapse:collapse;
-    width:90%;
-    background:white;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 6px 15px rgba(0,0,0,0.1);
-}
-
-th,td{
-    padding:12px;
-    border-bottom:1px solid #eee;
-    text-align:center;
-}
-
-th{
-    background:#1e3a8a;
-    color:white;
-}
-
-tr:hover{
-    background:#f1f5ff;
+    color:#fff;
 }
 
 /* LOGOUT */
@@ -81,21 +77,25 @@ tr:hover{
 }
 
 .logout a{
-    padding:10px 20px;
-    background:#1e3a8a;
-    color:white;
-    border-radius:6px;
     text-decoration:none;
 }
 
 /* CHART */
 .chart{
-    width:400px;
+    width:100%;
+    max-width:420px;
+    height:320px;
     margin:40px auto;
-    background:white;
+    background:rgba(255,255,255,0.04);
     padding:20px;
     border-radius:12px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:0 16px 40px rgba(0,0,0,0.25);
+}
+
+.chart canvas{
+    width:100% !important;
+    height:100% !important;
 }
 
 </style>
@@ -103,7 +103,16 @@ tr:hover{
 
 <body>
 
-<h2>Diabetes Prediction Admin Dashboard</h2>
+<div class="navbar">
+    <div><strong>PIMA Diabetes Prediction System</strong></div>
+    <div>
+        <a href="/predict_page">Predict</a>
+        <a href="/history">My History</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<h2>Diabetes Prediction Dashboard</h2>
 
 <!-- KPI CARDS -->
 <div class="cards">
@@ -136,8 +145,16 @@ tr:hover{
 <table>
 
 <tr>
+<th>User</th>
+<th>Email</th>
+<th>Gender</th>
+<th>Pregnancies</th>
 <th>Glucose</th>
+<th>Blood Pressure</th>
+<th>Skin Thickness</th>
+<th>Insulin</th>
 <th>BMI</th>
+<th>DPF</th>
 <th>Age</th>
 <th>Prediction</th>
 <th>Probability</th>
@@ -148,9 +165,25 @@ tr:hover{
 
 <tr>
 
+<td>{{ d.user if d.user else "-" }}</td>
+
+<td>{{ d.email if d.email else "-" }}</td>
+
+<td>{{ d.input.Gender if d.input.Gender else "-" }}</td>
+
+<td>{{ d.input.Pregnancies if d.input.Pregnancies is not none else "-" }}</td>
+
 <td>{{ d.input.Glucose if d.input.Glucose else "-" }}</td>
 
+<td>{{ d.input.BloodPressure if d.input.BloodPressure else "-" }}</td>
+
+<td>{{ d.input.SkinThickness if d.input.SkinThickness is not none else "-" }}</td>
+
+<td>{{ d.input.Insulin if d.input.Insulin is not none else "-" }}</td>
+
 <td>{{ d.input.BMI if d.input.BMI else "-" }}</td>
+
+<td>{{ d.input.DiabetesPedigreeFunction if d.input.DiabetesPedigreeFunction is not none else "-" }}</td>
 
 <td>{{ d.input.Age if d.input.Age else "-" }}</td>
 
@@ -166,7 +199,7 @@ tr:hover{
 
 <td>{{ (d.probability*100)|round(2) }}%</td>
 
-<td>{{ d.time.strftime("%d-%m-%Y %H:%M") }}</td>
+<td>{{ d.time_display if d.time_display else d.time.strftime("%d-%m-%Y %H:%M:%S") }}</td>
 
 </tr>
 
@@ -177,7 +210,11 @@ tr:hover{
 
 <!-- LOGOUT -->
 <div class="logout">
-<a href="/logout">Logout</a>
+<a href="/logout" class="btn">Logout</a>
+</div>
+
+<div class="bottom-actions">
+    <button type="button" class="btn" onclick="window.history.back()">Back</button>
 </div>
 
 
@@ -206,6 +243,8 @@ new Chart(document.getElementById("riskChart"), {
     },
 
     options:{
+        responsive:true,
+        maintainAspectRatio:false,
         plugins:{
             legend:{
                 position:'bottom'

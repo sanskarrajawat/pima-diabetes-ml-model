@@ -1,233 +1,542 @@
 <!DOCTYPE html>
-
 <html>
 <head>
-<title>Diabetes Risk Prediction</title>
+<title>Diabetes Prediction</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='pro-ui.css') }}">
 
 <style>
-
-body{
-    margin:0;
-    font-family: Arial;
-    background:#f5f9ff;
+html, body {
+    margin: 0;
+    min-height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(108, 92, 231, 0.22), transparent 24%),
+        radial-gradient(circle at 85% 20%, rgba(72, 183, 255, 0.16), transparent 22%),
+        linear-gradient(180deg, #070711 0%, #0c0d18 48%, #10111f 100%);
+    color: #fff;
 }
 
-/* NAVBAR */
-.nav{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 40px;
-    background:white;
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+.page-shell {
+    position: relative;
+    overflow: hidden;
 }
 
-.nav h2{
-    color:#1e3a8a;
+.page-shell::before,
+.page-shell::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(22px);
+    pointer-events: none;
 }
 
-.nav a{
-    margin-left:20px;
-    text-decoration:none;
-    color:#333;
-    font-weight:bold;
+.page-shell::before {
+    width: 320px;
+    height: 320px;
+    background: rgba(108, 92, 231, 0.18);
+    top: -90px;
+    left: -80px;
 }
 
-/* HERO */
-.hero{
-    text-align:center;
-    padding:100px 20px;
+.page-shell::after {
+    width: 260px;
+    height: 260px;
+    background: rgba(72, 183, 255, 0.12);
+    bottom: 140px;
+    right: -70px;
 }
 
-.hero h1{
-    font-size:42px;
-    color:#1e3a8a;
+.container {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
 }
 
-.hero p{
-    color:#555;
-    margin:20px 0;
-    font-size:18px;
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(14px);
+    background: linear-gradient(180deg, rgba(7, 7, 17, 0.96), rgba(7, 7, 17, 0.68));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.btn{
-    background:#1e3a8a;
-    color:white;
-    padding:12px 25px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    font-size:16px;
+.nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
 }
 
-.btn:hover{
-    background:#2563eb;
+.nav h2 {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 0.4px;
+    color: #fff;
 }
 
-/* FEATURES */
-.features{
-    display:flex;
-    justify-content:center;
-    gap:30px;
-    padding:60px 40px;
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-.card{
-    background:white;
-    padding:25px;
-    width:260px;
-    border-radius:10px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.1);
-    text-align:center;
+.nav a {
+    text-decoration: none;
+    color: #d7dcff;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.card h3{
-    color:#1e3a8a;
+.nav a:hover {
+    color: #fff;
 }
 
-/* ABOUT */
-.about{
-    text-align:center;
-    padding:60px 20px;
+.hero {
+    padding: 72px 0 44px;
 }
 
-.about p{
-    max-width:700px;
-    margin:auto;
-    margin-top:10px;
-    color:#555;
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 34px;
+    align-items: center;
 }
 
-.about-images{
-    margin-top:30px;
+.hero-copy h1 {
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 0.96;
+    letter-spacing: -1.8px;
+    margin: 0;
+    max-width: 10ch;
 }
 
-.about-images img{
-    width:90px;
-    margin:10px;
+.hero-copy p {
+    color: #b8bfd4;
+    margin: 18px 0 26px;
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 58ch;
 }
 
-/* FOOTER */
-.footer{
-    background:#1e3a8a;
-    color:white;
-    text-align:center;
-    padding:20px;
-    margin-top:40px;
+.hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
 }
 
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 20px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #2f80ed, #6c5ce7);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 14px 30px rgba(47, 128, 237, 0.24);
+    transition: 0.22s ease;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px rgba(47, 128, 237, 0.30);
+}
+
+.cta-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hero-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #dbe2ff;
+    font-size: 12px;
+}
+
+.hero-visual {
+    position: relative;
+    min-height: 520px;
+    border-radius: 30px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+        radial-gradient(circle at 50% 38%, rgba(108, 92, 231, 0.28), transparent 34%),
+        rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.hero-visual::before,
+.hero-visual::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero-visual::before {
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(72, 183, 255, 0.24), transparent 68%);
+    right: -40px;
+    top: 20px;
+}
+
+.hero-visual::after {
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(108, 92, 231, 0.26), transparent 70%);
+    left: -90px;
+    bottom: -40px;
+}
+
+.hero-card {
+    position: absolute;
+    inset: 26px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(8, 8, 16, 0.92), rgba(17, 18, 31, 0.92));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hero-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-chip {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #dfe5ff;
+    font-size: 12px;
+    letter-spacing: 0.4px;
+}
+
+.hero-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.metric {
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.metric label {
+    display: block;
+    color: #8a93a8;
+    font-size: 12px;
+    margin-bottom: 6px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.metric strong {
+    color: #fff;
+    font-size: 22px;
+}
+
+.mini-panel {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(47, 128, 237, 0.16), rgba(108, 92, 231, 0.12));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mini-panel p {
+    margin: 0;
+    color: #d8def2;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.section {
+    padding: 34px 0 66px;
+}
+
+.section-title {
+    font-size: 30px;
+    letter-spacing: -0.6px;
+    margin: 0 0 12px;
+}
+
+.section-lead {
+    color: #b8bfd4;
+    max-width: 760px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.feature-grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.card {
+    padding: 22px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.card h3 {
+    margin: 0 0 10px;
+    color: #fff;
+    font-size: 18px;
+}
+
+.card p {
+    margin: 0;
+    color: #c7cde0;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.about-grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 18px;
+}
+
+.about-panel {
+    padding: 24px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.about-panel h3 {
+    margin: 0 0 10px;
+    color: #fff;
+    font-size: 20px;
+}
+
+.about-panel p {
+    margin: 0 0 14px;
+    color: #c7cde0;
+    line-height: 1.7;
+}
+
+.about-points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.about-point {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #f5f7ff;
+    font-size: 13px;
+}
+
+.workflow {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.workflow-item {
+    padding: 20px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.workflow-item .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2f80ed, #6c5ce7);
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.workflow-item h4 {
+    margin: 0 0 8px;
+    color: #fff;
+}
+
+.workflow-item p {
+    margin: 0 auto;
+    color: #c7cde0;
+    line-height: 1.6;
+    max-width: 17ch;
+}
+
+.footer {
+    padding: 18px 0 30px;
+    color: #7e8598;
+    text-align: center;
+    font-size: 13px;
+}
+
+@media (max-width: 960px) {
+    .hero-grid,
+    .about-grid,
+    .feature-grid,
+    .workflow {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-visual {
+        min-height: 460px;
+    }
+}
+
+@media (max-width: 640px) {
+    .nav-inner {
+        gap: 10px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero {
+        padding: 42px 0 34px;
+    }
+
+    .section {
+        padding: 18px 0 54px;
+    }
+
+    .hero-visual {
+        min-height: 380px;
+    }
+}
 </style>
-
 </head>
 
 <body>
-
-<!-- NAVBAR -->
+<div class="page-shell">
 
 <div class="nav">
-
-<h2>Diabetes Prediction</h2>
-
-<div>
-
-<a href="/">Home</a>
-
-{% if session.get("username") %}
-
-<a href="/predict_page">Predict</a>
-
-<a href="/history">My History</a>
-
-<a href="/logout">Logout</a>
-
-{% else %}
-
-<a href="/login">Login</a>
-
-{% endif %}
-
+    <div class="container nav-inner">
+        <h2>Diabetes Prediction</h2>
+        <div class="nav-actions">
+            <a href="/">Home</a>
+            <a href="/login">Login</a>
+        </div>
+    </div>
 </div>
-
-</div>
-
-<!-- HERO -->
 
 <div class="hero">
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <h1>AI-Based Diabetes Risk Assessment</h1>
+            <p>Understand diabetes risk instantly with a premium guided experience built for clarity, tracking, and early awareness.</p>
+            <div class="hero-actions">
+            <a class="cta-button" href="/login">Login</a>
+            </div>
+            <div class="hero-tags">
+                <span class="tag">Fast prediction</span>
+                <span class="tag">Medical metrics</span>
+            </div>
+        </div>
 
-<h1>AI-Based Diabetes Risk Assessment</h1>
-
-<p>
-Enter your medical details and get instant prediction using a Machine Learning model
-trained on the PIMA Diabetes dataset.
-</p>
-
-<button class="btn" onclick="location.href='/predict_page'">
-Start Prediction
-</button>
-
+        <div class="hero-visual">
+            <div class="hero-card">
+                <div class="hero-card-top">
+                    <div class="brand-chip">Diabetes Prediction</div>
+                    <div class="brand-chip">Live</div>
+                </div>
+                <div class="hero-metric-grid">
+                    <div class="metric"><label>Glucose</label><strong>Analyzed</strong></div>
+                    <div class="metric"><label>BMI</label><strong>Tracked</strong></div>
+                    <div class="metric"><label>Age</label><strong>Guided</strong></div>
+                </div>
+                <div class="mini-panel">
+                    <p>Use the prediction form to enter your values and review the result instantly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- FEATURES -->
-
-<div class="features">
-
-<div class="card">
-<h3>Fast Prediction</h3>
-<p>Instant results using a trained Machine Learning model.</p>
+<div class="section">
+    <div class="container">
+        <h2 class="section-title">Built for fast, focused health review</h2>
+        <p class="section-lead">The interface is designed like a premium dashboard: clear hierarchy, subtle contrast, and fewer distractions so the user knows exactly where to start.</p>
+        <div class="feature-grid">
+            <div class="card"><h3>Fast Prediction</h3><p>Instant results using a trained machine learning model.</p></div>
+            <div class="card"><h3>Secure Data</h3><p>All predictions are stored privately in MongoDB and your sheet if connected.</p></div>
+            <div class="card"><h3>Accurate Analysis</h3><p>Built using Scikit-learn and validated on the PIMA diabetes dataset.</p></div>
+        </div>
+    </div>
 </div>
 
-<div class="card">
-<h3>Secure Data</h3>
-<p>All predictions are safely stored in MongoDB.</p>
+<div class="section">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-panel">
+                <h3>About This Project</h3>
+                <p>Diabetes Prediction is a machine-learning web app that estimates diabetes risk using medical inputs such as Glucose, BMI, Blood Pressure, Insulin, and Age.</p>
+                <p>The platform is designed for quick screening, better awareness, and regular tracking so users can take preventive action early.</p>
+                <div class="about-points">
+                    <span class="about-point">Glucose tracking</span>
+                    <span class="about-point">BMI awareness</span>
+                    <span class="about-point">Blood pressure check</span>
+                    <span class="about-point">Personal history saved</span>
+                </div>
+            </div>
+
+            <div class="about-panel">
+                <h3>Workflow</h3>
+                <div class="workflow">
+                    <div class="workflow-item"><div class="num">1</div><h4>Fill Details</h4><p>Enter your health values in the form.</p></div>
+                    <div class="workflow-item"><div class="num">2</div><h4>Get Prediction</h4><p>Instantly see your diabetes risk result.</p></div>
+                    <div class="workflow-item"><div class="num">3</div><h4>Track History</h4><p>View your own saved prediction records.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="card">
-<h3>Accurate Analysis</h3>
-<p>Built using Scikit-learn and validated medical dataset.</p>
-</div>
-
-</div>
-
-<!-- ABOUT -->
-
-<div class="about">
-
-<h2>About This Project</h2>
-
-<p>
-Diabetes Prediction is a Machine Learning based web application that predicts
-the risk of diabetes using medical parameters like Glucose, BMI, Blood Pressure
-and Age.
-</p>
-
-<p>
-The system is trained on the PIMA Diabetes dataset and provides instant
-results through a Flask web interface.
-</p>
-
-<p>
-The goal of this project is to demonstrate how Artificial Intelligence
-can assist in early health risk detection.
-</p>
-
-<div class="about-images">
-
-<img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png">
-
-<img src="https://cdn-icons-png.flaticon.com/512/2966/2966484.png">
-
-</div>
-
-</div>
-
-<!-- FOOTER -->
 
 <div class="footer">
-
-© 2026 Diabetes Risk Prediction System
-Developed using Flask, Machine Learning and MongoDB.
-
+    © 2026 Diabetes Prediction. Developed using Flask, Machine Learning and MongoDB.
 </div>
 
+</div>
 </body>
 </html>

@@ -3,59 +3,88 @@
 <head>
 <title>Create Account</title>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='pro-ui.css') }}">
+
 <style>
 
-body{
-font-family:Arial;
-background:linear-gradient(135deg,#dbeafe,#eef2ff);
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+html, body {
+height: 100%;
 }
 
-.box{
-background:white;
-padding:35px;
-border-radius:12px;
-box-shadow:0 8px 20px rgba(0,0,0,0.1);
-width:320px;
-text-align:center;
+body {
+margin: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+font-family: 'Segoe UI', sans-serif;
+background:
+radial-gradient(circle at 15% 10%, rgba(108, 92, 231, 0.22), transparent 24%),
+radial-gradient(circle at 85% 20%, rgba(72, 183, 255, 0.16), transparent 22%),
+linear-gradient(180deg, #070711 0%, #0c0d18 48%, #10111f 100%);
 }
 
-h2{
-color:#1e3a8a;
+.box {
+padding: 32px 28px 24px;
+width: 380px;
+max-width: 92vw;
+text-align: center;
+border-radius: 24px;
+background: rgba(255, 255, 255, 0.04);
+border: 1px solid rgba(255, 255, 255, 0.08);
+box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
 }
 
-input{
-width:95%;
-padding:10px;
-margin-top:10px;
-border-radius:6px;
-border:1px solid #ccc;
+h2 {
+color: #fff;
+margin-bottom: 16px;
+font-size: 34px;
 }
 
-button{
-background:#1e3a8a;
-color:white;
-padding:10px 25px;
-border:none;
-border-radius:6px;
-margin-top:15px;
-cursor:pointer;
+form {
+display: flex;
+flex-direction: column;
+gap: 10px;
 }
 
-button:hover{
-background:#2563eb;
+input {
+width: 100%;
+margin: 0;
+padding: 13px 14px;
+border-radius: 10px;
+border: 1px solid rgba(255, 255, 255, 0.08);
+background: rgba(15, 18, 34, 0.78);
+color: #f7f8fc;
 }
 
-.login{
-margin-top:15px;
+input::placeholder {
+color: #9ca3af;
 }
 
-.login a{
-text-decoration:none;
-color:#1e3a8a;
+.hint {
+font-size: 12px;
+text-align: left;
+margin: -2px 0 4px;
+color: #cbd5e1;
+}
+
+button {
+margin-top: 8px;
+}
+
+.login {
+margin-top: 16px;
+font-size: 15px;
+color: #d1d5db;
+}
+
+.login a {
+text-decoration: none;
+color: #8bbcff;
+}
+
+.login a:hover {
+color: #cfe3ff;
 }
 
 </style>
@@ -63,17 +92,25 @@ color:#1e3a8a;
 
 <body>
 
-<div class="box">
+<div class="box card">
 
 <h2>Create Account</h2>
 
 <form method="POST">
 
-<input name="username" placeholder="Username" required>
+<input name="username" placeholder="Username (e.g. rahul123)" required>
 
-<input type="password" name="password" placeholder="Password" required>
+<div class="hint">Use letters and numbers only for your username.</div>
 
-<button type="submit">Register</button>
+<input type="email" name="email" placeholder="Gmail (e.g. rahul@gmail.com)" required>
+
+<div class="hint">Enter a valid email address to link your account history.</div>
+
+<input type="password" name="password" placeholder="Password (min 6 characters)" minlength="6" required>
+
+<div class="hint">Use a strong password with both letters and numbers.</div>
+
+<button type="submit" class="btn">Register</button>
 
 </form>
 

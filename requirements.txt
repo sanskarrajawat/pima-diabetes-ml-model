@@ -1,6 +1,12 @@
+flask
+pymongo
 streamlit
 pandas
 numpy
 scikit-learn
 xgboost
 joblib
+shap
+gspread
+google-auth
+python-dotenv

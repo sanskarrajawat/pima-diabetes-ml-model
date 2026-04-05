@@ -10,12 +10,20 @@ import os
 import shap
 import numpy as np
 
+from dotenv import load_dotenv
+
 
 # ================================
 # CREATE APP
 # ================================
+load_dotenv()
+
 app = Flask(__name__)
 app.secret_key = "super_secret_key_123"
+
+
+def is_logged_in():
+    return bool(session.get("email"))
 
 
 # ================================
@@ -56,16 +64,24 @@ def register():
 
     if request.method == "POST":
 
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
 
-        if db.users.find_one({"username":username}):
+        if not username or not email or not password:
+            return "All fields are required"
 
-            return "User already exists"
+        if "@" not in email or "." not in email:
+            return "Please enter a valid email"
+
+        if db.users.find_one({"$or": [{"username": username}, {"email": email}]}):
+
+            return "User already exists with same username/email"
 
         db.users.insert_one({
-            "username":username,
-            "password":password
+            "username": username,
+            "email": email,
+            "password": password
         })
 
         return redirect("/login")
@@ -82,13 +98,17 @@ def login():
     if request.method == "POST":
 
         role = request.form.get("role")
-        username = request.form.get("username")
-        password = request.form.get("password")
+        login_email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
 
         # ADMIN LOGIN
-        if role == "admin" and username == "admin" and password == "vaibhav":
+        if role == "admin" and login_email == "rajawatsanskar769@gmail.com" and password == "123456789":
+
+            session.clear()
 
             session["role"] = "admin"
+            session["username"] = "Admin"
+            session["email"] = login_email
 
             return redirect("/dashboard")
 
@@ -96,17 +116,20 @@ def login():
         if role == "user":
 
             user = db.users.find_one({
-                "username":username,
-                "password":password
+                "email": login_email,
+                "password": password
             })
 
             if user:
 
+                session.clear()
+
                 session["role"] = "user"
 
-                session["username"] = username
+                session["username"] = user.get("username")
+                session["email"] = user.get("email", "")
 
-                return redirect("/predict_page")
+                return redirect("/dashboard")
 
         return "Wrong credentials"
 
@@ -119,9 +142,12 @@ def login():
 @app.route("/dashboard")
 def dashboard():
 
-    if "role" not in session or session["role"] != "admin":
+    if not is_logged_in():
 
         return redirect("/login")
+
+    if session.get("role") != "admin":
+        return redirect("/predict_page")
 
     data = list(db.predictions.find().sort("time",-1).limit(10))
 
@@ -146,18 +172,21 @@ def dashboard():
 @app.route("/history")
 def history():
 
-    if "role" not in session:
+    if not is_logged_in():
         return redirect("/login")
 
-    username = session.get("username")
+    email = session.get("email", "")
+
+    if not email:
+        return redirect("/login")
 
     data = list(
         db.predictions
-        .find({"user":username})
+        .find({"email": email})
         .sort("time",-1)
     )
 
-    return render_template("history.html",data=data)
+    return render_template("templates/history.html",data=data)
 
 
 # ==========================================================
@@ -166,7 +195,7 @@ def history():
 @app.route("/predict_page")
 def predict_page():
 
-    if "role" not in session:
+    if not is_logged_in():
         return redirect("/login")
 
     return render_template("predict.html")
@@ -178,15 +207,18 @@ def predict_page():
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    if "role" not in session:
+    if not is_logged_in():
         return jsonify({"error":"Unauthorized"}),401
 
     try:
 
-        data = request.json
+        data = request.json or {}
 
-        gender = data.get("Gender")
-        pregnancies = float(data.get("Pregnancies",0))
+        gender = str(data.get("Gender", "")).strip().title()
+        pregnancies_raw = data.get("Pregnancies", 0)
+        if pregnancies_raw in [None, "", "null"]:
+            pregnancies_raw = 0
+        pregnancies = float(pregnancies_raw)
         glucose = float(data.get("Glucose",0))
         bp = float(data.get("BloodPressure",0))
         skin = float(data.get("SkinThickness",0))
@@ -195,9 +227,13 @@ def predict():
         dpf = float(data.get("DiabetesPedigreeFunction",0))
         age = float(data.get("Age",0))
 
+        if gender not in ["Male", "Female"]:
+            return jsonify({"error":"Gender must be Male or Female"})
+
         # VALIDATION
-        if age < 18 or age > 100:
-            return jsonify({"error":"Age must be between 18 and 100"})
+        min_age = 1 if (gender == "Male" or pregnancies == 0) else 18
+        if age < min_age or age > 100:
+            return jsonify({"error": f"Age must be between {min_age} and 100"})
 
         if glucose < 50 or glucose > 300:
             return jsonify({"error":"Invalid Glucose value"})
@@ -208,15 +244,27 @@ def predict():
         if gender == "Male":
             pregnancies = 0
 
+        normalized_input = {
+            "Gender": gender,
+            "Pregnancies": int(pregnancies),
+            "Glucose": round(glucose, 2),
+            "BloodPressure": round(bp, 2),
+            "SkinThickness": round(skin, 2),
+            "Insulin": round(insulin, 2),
+            "BMI": round(bmi, 2),
+            "DiabetesPedigreeFunction": round(dpf, 4),
+            "Age": int(age),
+        }
+
         input_data = [[
-            pregnancies,
-            glucose,
-            bp,
-            skin,
-            insulin,
-            bmi,
-            dpf,
-            age
+            normalized_input["Pregnancies"],
+            normalized_input["Glucose"],
+            normalized_input["BloodPressure"],
+            normalized_input["SkinThickness"],
+            normalized_input["Insulin"],
+            normalized_input["BMI"],
+            normalized_input["DiabetesPedigreeFunction"],
+            normalized_input["Age"],
         ]]
 
         prediction = int(model.predict(input_data)[0])
@@ -243,15 +291,33 @@ def predict():
         top_factors = [f[0] for f in sorted_impact]
 
         # SAVE DB
-        db.predictions.insert_one({
+        current_time = datetime.now()
+        username = session.get("username") or session.get("email", "").split("@")[0]
+        user_email = session.get("email", "")
 
-            "user":session.get("username"),
-            "input":data,
+        prediction_doc = {
+
+            "user": username,
+            "email": user_email,
+            "input":normalized_input,
+            # Duplicate key fields at top level so MongoDB Compass can show them without expanding input.
+            "gender": normalized_input["Gender"],
+            "pregnancies": normalized_input["Pregnancies"],
+            "glucose": normalized_input["Glucose"],
+            "blood_pressure": normalized_input["BloodPressure"],
+            "skin_thickness": normalized_input["SkinThickness"],
+            "insulin": normalized_input["Insulin"],
+            "bmi": normalized_input["BMI"],
+            "diabetes_pedigree_function": normalized_input["DiabetesPedigreeFunction"],
+            "age": normalized_input["Age"],
             "prediction":prediction,
             "probability":probability,
-            "time":datetime.now()
+            "time":current_time,
+            "time_display":current_time.strftime("%d-%m-%Y %H:%M:%S")
 
-        })
+        }
+
+        db.predictions.insert_one(prediction_doc)
 
         return jsonify({
 
