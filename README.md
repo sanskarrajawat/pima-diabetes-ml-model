@@ -138,7 +138,6 @@ Each saved document includes:
 - Keep `diabetes_model.pkl` in the root directory for successful model loading.
 
 ## Author
-
-Sanskar Rajawat
+Vaibhav Pratap Singh Rajawat
 
 GitHub: https://github.com/sanskarrajawat
